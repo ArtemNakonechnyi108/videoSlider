@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Video Slider CSS & JS</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      .container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      .container video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .container .controls {
+        position: absolute;
+        bottom: 50px;
+        left: 50%;
+        transform: translate(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container .controls li {
+        list-style: none;
+        cursor: pointer;
+
+        margin: 0 10px;
+        background: #fff;
+        padding: 3px 3px 0px;
+      }
+
+      .container .controls li img {
+        width: 150px;
+        transition: 0.5s;
+      }
+
+      .container .controls li img:hover {
+        width: 175px;
+      }
+
+      #video-slider {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 1; /* Начальная непрозрачность */
+        transition: opacity 1s ease-in-out; /* Плавный переход */
+      }
+
+      @media (max-width: 400px) {
+        .container {
+          height: 50vh;
+        }
+
+        .container .controls li img {
+          width: 75px;
+        }
+
+        .container .controls li img:hover {
+          width: 85px;
+        }
+        .container .controls li {
+          margin: 0 7px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Удалите атрибут autoplay -->
+      <video id="video-slider" autoplay muted loop></video>
+      <ul class="controls">
+        <li onclick="videoUrl('video/1.mp4')">
+          <img src="scrinshots/1.png" />
+        </li>
+        <li onclick="videoUrl('video/2.mp4')">
+          <img src="scrinshots/2.png" />
+        </li>
+        <li onclick="videoUrl('video/3.mp4')">
+          <img src="scrinshots/3.png" />
+        </li>
+        <li onclick="videoUrl('video/4.mp4')">
+          <img src="scrinshots/4.png" />
+        </li>
+      </ul>
+    </div>
+
+    <script>
+      var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
+      var currentIndex = 0;
+      var isVideoSwitched = false;
+
+      function videoUrl(slider) {
+        var video = document.getElementById("video-slider");
+        video.style.opacity = 0; // Установим непрозрачность 0
+        setTimeout(function () {
+          video.src = slider; // Установим новый источник видео
+          video.load(); // Загрузим новое видео
+          video.play(); // Воспроизведем новое видео
+          video.style.opacity = 1; // Вернем непрозрачность 1
+          isVideoSwitched = false; // Сбросим флаг переключения видео
+        }, 1000); // Пауза для плавного перехода
+      }
+
+      var video = document.getElementById("video-slider");
+      video.addEventListener("timeupdate", function () {
+        if (video.currentTime >= video.duration - 1 && !isVideoSwitched) {
+          // Если видео почти завершено и не было переключено
+          currentIndex = (currentIndex + 1) % videos.length; // Увеличиваем индекс на 1, переходя к следующему видео
+          videoUrl(videos[currentIndex]); // Переключаемся на следующее видео
+          isVideoSwitched = true; // Устанавливаем флаг, чтобы избежать повторного переключения в течение этого цикла обновления времени воспроизведения
+        }
+      });
+
+      // Запустите первое видео после загрузки страницы
+      window.onload = function () {
+        videoUrl(videos[currentIndex]);
+      };
+    </script>
+  </body>
+</html>
