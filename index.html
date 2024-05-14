@@ -68,6 +68,10 @@
         visibility: hidden; /* Скрываем видео */
       }
 
+      #preload-video {
+      display: none; /* Скрываем предварительно загруженное видео */
+    }
+
       @media (max-width: 400px) {
         .container {
           height: 50vh;
@@ -105,20 +109,25 @@
       </ul>
     </div>
 
-     <script>
+    <script>
     var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
     var currentIndex = 0;
     var isVideoSwitched = false;
 
     function videoUrl(slider) {
       var video = document.getElementById("video-slider");
+      var preloadVideo = document.getElementById("preload-video");
       video.style.opacity = 0; // Устанавливаем непрозрачность 0 перед загрузкой нового видео
       setTimeout(function() {
-        video.src = slider; // Устанавливаем новый источник видео
-        video.load(); // Загружаем новое видео
-        video.play(); // Воспроизводим новое видео
-        video.style.opacity = 1; // Устанавливаем непрозрачность 1 после загрузки
-        isVideoSwitched = false; // Сбрасываем флаг переключения видео
+        preloadVideo.src = slider; // Устанавливаем новый источник видео для предварительной загрузки
+        preloadVideo.load(); // Загружаем новое видео
+        preloadVideo.play(); // Воспроизводим новое видео
+        setTimeout(function() { // После завершения предварительной загрузки
+          video.src = slider; // Устанавливаем новый источник видео
+          video.play(); // Воспроизводим новое видео
+          video.style.opacity = 1; // Устанавливаем непрозрачность 1 после загрузки
+          isVideoSwitched = false; // Сбрасываем флаг переключения видео
+        }, preloadVideo.duration * 1000); // Задержка равная длительности предварительно загруженного видео
       }, 1000); // Пауза для плавного перехода
     }
 
