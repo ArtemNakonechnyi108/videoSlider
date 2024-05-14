@@ -105,25 +105,19 @@
       </ul>
     </div>
 
-    <script>
+     <script>
     var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
     var currentIndex = 0;
     var isVideoSwitched = false;
 
     function videoUrl(slider) {
       var video = document.getElementById("video-slider");
-      var nextIndex = (currentIndex + 1) % videos.length; // Определяем индекс следующего видео
-      var nextVideo = new Video(); // Создаем новый элемент video для предварительной загрузки следующего видео
-      nextVideo.src = videos[nextIndex]; // Устанавливаем источник следующего видео
-      nextVideo.preload = 'auto'; // Устанавливаем режим предварительной загрузки для следующего видео
-      nextVideo.load(); // Предварительно загружаем следующее видео
-
-      video.style.opacity = 0; // Устанавливаем непрозрачность 0
+      video.style.opacity = 0; // Устанавливаем непрозрачность 0 перед загрузкой нового видео
       setTimeout(function() {
         video.src = slider; // Устанавливаем новый источник видео
         video.load(); // Загружаем новое видео
         video.play(); // Воспроизводим новое видео
-        video.style.opacity = 1; // Устанавливаем непрозрачность 1
+        video.style.opacity = 1; // Устанавливаем непрозрачность 1 после загрузки
         isVideoSwitched = false; // Сбрасываем флаг переключения видео
       }, 1000); // Пауза для плавного перехода
     }
