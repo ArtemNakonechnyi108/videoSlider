@@ -106,36 +106,40 @@
     </div>
 
     <script>
-      var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
-      var currentIndex = 0;
-      var isVideoSwitched = false;
+    var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
+    var currentIndex = 0;
+    var isVideoSwitched = false;
 
-      function videoUrl(slider) {
-        var video = document.getElementById("video-slider");
-        video.style.opacity = 0; // Установим непрозрачность 0
-        setTimeout(function () {
-          video.src = slider; // Установим новый источник видео
-          video.load(); // Загрузим новое видео
-          video.play(); // Воспроизведем новое видео
-          video.style.opacity = 1; // Вернем непрозрачность 1
-          isVideoSwitched = false; // Сбросим флаг переключения видео
-        }, 1000); // Пауза для плавного перехода
-      }
-
+    function videoUrl(slider) {
       var video = document.getElementById("video-slider");
-      video.addEventListener("timeupdate", function () {
-        if (video.currentTime >= video.duration - 1 && !isVideoSwitched) {
-          // Если видео почти завершено и не было переключено
-          currentIndex = (currentIndex + 1) % videos.length; // Увеличиваем индекс на 1, переходя к следующему видео
-          videoUrl(videos[currentIndex]); // Переключаемся на следующее видео
-          isVideoSwitched = true; // Устанавливаем флаг, чтобы избежать повторного переключения в течение этого цикла обновления времени воспроизведения
-        }
+      var tempVideo = document.createElement('video'); // Создаем временный элемент video
+      tempVideo.src = slider; // Устанавливаем источник видео для предзагрузки
+      tempVideo.load(); // Предзагружаем видео
+      tempVideo.addEventListener('loadeddata', function() {
+        video.style.opacity = 0; // Устанавливаем непрозрачность 0
+        setTimeout(function() {
+          video.src = slider; // Устанавливаем новый источник видео
+          video.load(); // Загружаем новое видео
+          video.play(); // Воспроизводим новое видео
+          video.style.opacity = 1; // Устанавливаем непрозрачность 1
+          isVideoSwitched = false; // Сбрасываем флаг переключения видео
+        }, 1000); // Пауза для плавного перехода
       });
+    }
 
-      // Запустите первое видео после загрузки страницы
-      window.onload = function () {
-        videoUrl(videos[currentIndex]);
-      };
-    </script>
+    var video = document.getElementById("video-slider");
+    video.addEventListener('timeupdate', function() {
+      if (video.currentTime >= video.duration - 1 && !isVideoSwitched) { // Если видео почти завершено и не было переключено
+        currentIndex = (currentIndex + 1) % videos.length; // Увеличиваем индекс на 1, переходя к следующему видео
+        videoUrl(videos[currentIndex]); // Переключаемся на следующее видео
+        isVideoSwitched = true; // Устанавливаем флаг, чтобы избежать повторного переключения в течение этого цикла обновления времени воспроизведения
+      }
+    });
+
+    // Запустите первое видео после загрузки страницы
+    window.onload = function() {
+      videoUrl(videos[currentIndex]);
+    };
+  </script>
   </body>
 </html>
