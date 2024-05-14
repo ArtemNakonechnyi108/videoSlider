@@ -27,6 +27,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        opacity: 0; /* Начальная прозрачность */
+        transition: opacity 1s ease-in-out; /* Плавный переход */
       }
 
       .container .controls {
@@ -59,18 +61,11 @@
 
       #video-slider {
         width: 100%;
-        height: auto;
+        height: 100%;
         position: absolute;
         top: 0;
         left: 0;
-        opacity: 1; /* Начальная непрозрачность */
-        transition: opacity 1s ease-in-out; /* Плавный переход */
-        visibility: hidden; /* Скрываем видео */
       }
-
-      #preload-video {
-      display: none; /* Скрываем предварительно загруженное видео */
-    }
 
       @media (max-width: 400px) {
         .container {
@@ -92,62 +87,56 @@
   </head>
   <body>
     <div class="container">
-      <video id="video-slider" muted loop playsinline></video>
+      <!-- Удалите атрибут autoplay -->
+      <video id="video-slider" muted loop playsinline preload="auto"></video>
       <ul class="controls">
         <li onclick="videoUrl('video/1.mp4')">
-          <img src="screenshots/1.png" />
+          <img src="scrinshots/1.png" />
         </li>
         <li onclick="videoUrl('video/2.mp4')">
-          <img src="screenshots/2.png" />
+          <img src="scrinshots/2.png" />
         </li>
         <li onclick="videoUrl('video/3.mp4')">
-          <img src="screenshots/3.png" />
+          <img src="scrinshots/3.png" />
         </li>
         <li onclick="videoUrl('video/4.mp4')">
-          <img src="screenshots/4.png" />
+          <img src="scrinshots/4.png" />
         </li>
       </ul>
     </div>
 
     <script>
-    var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
-    var currentIndex = 0;
-    var isVideoSwitched = false;
+      var videos = ["video/1.mp4", "video/2.mp4", "video/3.mp4", "video/4.mp4"];
+      var currentIndex = 0;
 
-    function videoUrl(slider) {
-      var video = document.getElementById("video-slider");
-      var preloadVideo = document.getElementById("preload-video");
-      video.style.opacity = 0; // Устанавливаем непрозрачность 0 перед загрузкой нового видео
-      setTimeout(function() {
-        preloadVideo.src = slider; // Устанавливаем новый источник видео для предварительной загрузки
-        preloadVideo.load(); // Загружаем новое видео
-        preloadVideo.play(); // Воспроизводим новое видео
-        setTimeout(function() { // После завершения предварительной загрузки
-          video.src = slider; // Устанавливаем новый источник видео
-          video.play(); // Воспроизводим новое видео
-          video.style.opacity = 1; // Устанавливаем непрозрачность 1 после загрузки
-          isVideoSwitched = false; // Сбрасываем флаг переключения видео
-        }, preloadVideo.duration * 1000); // Задержка равная длительности предварительно загруженного видео
-      }, 1000); // Пауза для плавного перехода
-    }
-
-    var video = document.getElementById("video-slider");
-    video.addEventListener('timeupdate', function() {
-      if (video.currentTime >= video.duration - 1 && !isVideoSwitched) { // Если видео почти завершено и не было переключено
-        currentIndex = (currentIndex + 1) % videos.length; // Увеличиваем индекс на 1, переходя к следующему видео
-        videoUrl(videos[currentIndex]); // Переключаемся на следующее видео
-        isVideoSwitched = true; // Устанавливаем флаг, чтобы избежать повторного переключения в течение этого цикла обновления времени воспроизведения
+      function videoUrl(slider) {
+        var video = document.getElementById("video-slider");
+        video.src = slider; // Установите новый источник видео
+        video.load(); // Загрузите новое видео
       }
-    });
 
-    // Запустите первое видео после загрузки страницы
-    window.onload = function() {
-      videoUrl(videos[currentIndex]);
-    };
-    
-    video.addEventListener('loadeddata', function() {
-      video.style.visibility = 'visible';
-    });
-  </script>
+      var video = document.getElementById("video-slider");
+      video.addEventListener("canplaythrough", function () {
+        // Начните воспроизведение видео после загрузки
+        video.play();
+        // Скорректируйте прозрачность видео для плавного отображения
+        setTimeout(function () {
+          video.style.opacity = 1;
+        }, 1000);
+      });
+
+      video.addEventListener("timeupdate", function () {
+        if (video.currentTime >= video.duration - 1) {
+          // Если видео почти завершено, переключите его на следующее
+          currentIndex = (currentIndex + 1) % videos.length;
+          videoUrl(videos[currentIndex]);
+        }
+      });
+
+      // Запустите первое видео после загрузки страницы
+      window.onload = function () {
+        videoUrl(videos[currentIndex]);
+      };
+    </script>
   </body>
 </html>
